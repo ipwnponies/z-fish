@@ -20,10 +20,12 @@ function addzhist --on-variable PWD
 end
 
 function z -d "Jump to a recent directory."
-    set -l __Z_DATA "$HOME/.z"
+    
+    set __Z_DATA "$HOME/.z"
 
     # add entries
     if [ "$argv[1]" = "--add" ]
+        touch $__Z_DATA
         set -e argv[1]
 
         # $HOME isn't worth matching
@@ -58,24 +60,6 @@ function z -d "Jump to a recent directory."
         ' $__Z_DATA ^/dev/null > $tempfile
 
         command mv -f $tempfile $__Z_DATA
-
-    # tab completion
-    else
-        if [ "$argv[1]" = "--complete" ]
-            command awk -v q="$argv[2]" -F"|" '
-                  BEGIN {
-                if( q == tolower(q) ) imatch = 1
-                split(substr(q, 3), fnd, " ")
-            }
-            {
-                if( imatch ) {
-                    for( x in fnd ) tolower($1) !~ tolower(fnd[x]) && $1 = ""
-                } else {
-                    for( x in fnd ) $1 !~ fnd[x] && $1 = ""
-                }
-                if( $1 ) print $1
-            }
-            ' "$__Z_DATA" 2>/dev/null
 
         else
             # list/go
@@ -197,3 +181,29 @@ function z -d "Jump to a recent directory."
         end
     end
 end
+
+
+function __complete_z
+    set __Z_DATA "$HOME/.z"
+
+    awk -v q=(commandline| sed 's|^comandline ||') -F"|" '
+          BEGIN {
+        if( q == tolower(q) ) imatch = 1
+        split(substr(q, 3), fnd, " ")
+    }
+    {
+        if( imatch ) {
+            for( x in fnd ) tolower($1) !~ tolower(fnd[x]) && $1 = ""
+        } else {
+            for( x in fnd ) $1 !~ fnd[x] && $1 = ""
+        }
+        if( $1 ) print $1
+    }
+    ' $__Z_DATA 2>/dev/null
+end
+
+complete -f -c z -s t  --description 'goes to most recently accessed dir matching query'
+complete -f -c z -s l  --description 'list all dirs matching query (by frecency)'
+complete -f -c z -s r  --description 'goes to highest ranked dir matching query'
+
+complete -f -c z -a '(__complete_z)' --description 'z completer'
