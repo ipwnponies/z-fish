@@ -1,10 +1,12 @@
 # maintains a jump-list of the directories you actually use
 #
 # INSTALL:
-#   * put something like this in your config.fish:
-#     . /path/to/z.fish
-#   * put something like this in your fish_prompt function:
-#       z --add "$PWD"
+#   * put z.fish in your fish functions dir:
+#       mv z.fish ~/.config/fish/functions
+#   * put z_add_hist.fish in your fish conf.d dir:
+#       mv z_add_hist.fish ~/.config/fish/conf.d
+#   * put z_complete.fish in your fish completion dir, rename to z.fish:
+#       mv z_complete.fish ~/.config/fish/completions/z.fish
 #   * cd around for a while to build up the db
 #   * PROFIT!!
 #
@@ -14,10 +16,6 @@
 #   * z -r foo  # goes to highest ranked dir matching foo
 #   * z -t foo  # goes to most recently accessed dir matching foo
 #   * z -l foo  # list all dirs matching foo (by frecency)
-
-function addzhist --on-variable PWD
-    z --add "$PWD"
-end
 
 function z -d "Jump to a recent directory."
     
