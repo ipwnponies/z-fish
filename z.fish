@@ -19,7 +19,9 @@
 
 function z -d "Jump to a recent directory."
     
-    set -l __Z_DATA "$HOME/.z"
+    if not set -q __Z_DATA
+        set -g __Z_DATA "$HOME/.z"
+    end
     touch $__Z_DATA
 
     # add entries

@@ -1,5 +1,7 @@
 function __complete_z
-    set __Z_DATA "$HOME/.z"
+    if not set -q __Z_DATA
+        set -g __Z_DATA "$HOME/.z"
+    end
 
     awk -v q=(commandline) -F"|" '
           BEGIN {
